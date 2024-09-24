@@ -17,7 +17,7 @@ pip install .
 ```
 Run tests: 
 ```bash
-python -m unittest discover tests/
+python -m unittest discover test/
 ```
 ## Usage
 ```py
