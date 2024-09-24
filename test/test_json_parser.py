@@ -100,6 +100,37 @@ class TestJsonParser(unittest.TestCase):
 
         self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
 
+    def test_parse_json_object_with_nested_structures_returns_dict(self):
+        json_string = '''{
+            "key1": "value",
+            "key2": [
+                {
+                    "key2-1": [],
+                    "key2-2": {
+                        "key2-2-1": true
+                    }
+                },
+                false,
+                null
+            ]
+        }'''
+
+        result_dict = {
+            "key1": "value",
+            "key2": [
+                {
+                    "key2-1": [],
+                    "key2-2": {
+                        "key2-2-1": True
+                    }
+                },
+                False,
+                None
+            ]
+        }
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
     def _test_parse_json_returns_dict_and_exit_code(self, json_string, result_dict, exit_code=ExitCode.SUCCESS, debug=True):
         lexer = JLexer(json_string)
         tokens = lexer.get_tokens()
