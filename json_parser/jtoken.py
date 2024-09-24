@@ -5,6 +5,7 @@ class JTokenType(Enum):
     LEFT_BRACE  = auto()
     RIGHT_BRACE = auto()
     STRING      = auto()
+    NUMBER      = auto()
     COLON       = auto()
     EOF         = auto()
 

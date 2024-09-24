@@ -10,21 +10,6 @@ class TestJsonParser(unittest.TestCase):
     def setUp(self):
         self.stream = StringIO()
 
-    def test_parse_empty_json_returns_empty_dict(self):
-        empty_json = "{}"
-
-        lexer = JLexer(empty_json)
-        tokens = lexer.get_tokens()
-
-        parser = JParser(tokens)
-
-        with self.assertRaises(SystemExit) as cm:
-            parser.parse()
-            result = parser.result
-            self.assertDictEqual(result, {})
-
-        self.assertEqual(cm.exception.code, ExitCode.SUCCESS)
-
     def test_parse_invalid_json_raises_exception(self):
         invalid_json = "{\"key\"}"
 
@@ -40,22 +25,41 @@ class TestJsonParser(unittest.TestCase):
 
         self.assertEqual(cm.exception.code, ExitCode.INVALID)
 
-    def test_parse_single_key_string_value_returns_dict(self):
-        single_key_value_json = '{"key" : "value"}'
-        single_key_value_dict = {"key": "value"}
+    def test_parse_empty_json_returns_empty_dict(self):
+        empty_json = "{}"
+        empty_dict = {}
 
-        lexer = JLexer(single_key_value_json)
+        self._test_parse_json_returns_dict_and_exit_code(empty_json, empty_dict)
+
+
+    def test_parse_single_key_string_value_returns_dict(self):
+        json_string = '{"key" : "value"}'
+        result_dict = {"key": "value"}
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
+    def test_parse_single_key_int_value_returns_dict(self):
+        json_string = '{"key" : 37}'
+        result_dict = {"key": 37}
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
+
+    def _test_parse_json_returns_dict_and_exit_code(self, json_string, result_dict, exit_code=ExitCode.SUCCESS, debug=True):
+        lexer = JLexer(json_string)
         tokens = lexer.get_tokens()
+
+        if debug:
+            print("Tokens: ", *tokens, sep="\n\t-")
 
         parser = JParser(tokens)
 
         with self.assertRaises(SystemExit) as cm:
             parser.parse()
             result = parser.result
-            self.assertDictEqual(result, single_key_value_dict)
+            self.assertDictEqual(result, result_dict)
 
-        self.assertEqual(cm.exception.code, ExitCode.SUCCESS)
-
+        self.assertEqual(cm.exception.code, exit_code)
 
 if __name__ == "__main__":
     unittest.main()

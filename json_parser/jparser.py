@@ -17,7 +17,7 @@ class JParser:
     def parse(self):
         try:
             self.entry()
-            self.consume(JTokenType.EOF, "Expected EOF Token at the end of the file.")
+            self.consume(JTokenType.EOF, error_message="Expected EOF Token at the end of the file.")
         except JParserExceptionWithExitCode as e:
             sys.exit(e.get_exit_code())
         except Exception as e:
@@ -26,20 +26,22 @@ class JParser:
             sys.exit(ExitCode.SUCCESS)
 
     def entry(self):
-        self.consume(JTokenType.LEFT_BRACE, "Expected JSON String to start with '{'.")
+        self.consume(JTokenType.LEFT_BRACE, error_message="Expected JSON String to start with '{'.")
         while not self.match(JTokenType.RIGHT_BRACE):
             self.parse_kv_pairs()
-        self.consume(JTokenType.RIGHT_BRACE, "Expected JSON String to end with '}'")
+        self.consume(JTokenType.RIGHT_BRACE, error_message="Expected JSON String to end with '}'")
 
     def parse_kv_pairs(self):
-        key = self.consume(JTokenType.STRING, "Expected JSON Key to be a string.")
-        self.consume(JTokenType.COLON, "Expected ':' after JSON Key.")
-        value = self.consume(JTokenType.STRING, "Expected JSON value after ':'.")
+        key = self.consume(JTokenType.STRING, error_message="Expected JSON Key to be a string.")
+        self.consume(JTokenType.COLON, error_message="Expected ':' after JSON Key.")
+        value = self.consume(
+            JTokenType.STRING, JTokenType.NUMBER,
+            error_message="Expected JSON value after ':'.")
 
         self.result[key.literal] = value.literal
 
-    def consume(self, token_type: JTokenType, error_message: str):
-        if self.match(token_type): return self.advance()
+    def consume(self, *token_types, error_message: str = ""):
+        if self.match(*token_types): return self.advance()
         raise ParserError(error_message)
 
     def match(self, *token_types):

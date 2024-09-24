@@ -31,8 +31,9 @@ class JLexer:
 
             case   "{": self.add_token(JTokenType.LEFT_BRACE)
             case   "}": self.add_token(JTokenType.RIGHT_BRACE)
-            case  "\"": self.string()
             case   ":": self.add_token(JTokenType.COLON)
+            case  "\"": self.string()
+            case  x if x.isnumeric(): self.number()
             case  "\n": self.line += 1
             case     _: raise InvalidTokenException(f"Character <{c}> is not recognized.")
 
@@ -48,6 +49,12 @@ class JLexer:
         self.add_token_(JTokenType.STRING, literal)
         self.advance()
 
+    def number(self):
+        while self.peek().isnumeric() and not self.is_at_end():
+            self.advance()
+
+        literal = float(self.json_string[self.start:self.current])
+        self.add_token_(JTokenType.NUMBER, literal)
 
     def peek(self):
         return self.json_string[self.current]
