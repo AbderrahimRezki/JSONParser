@@ -61,6 +61,8 @@ class JParser:
             value = self.consume(*basic_data_types, error_message="Expected JSON value after ':'.").literal
         elif self.match(JTokenType.LEFT_SQUARE_BRACKET):
             value = self.parse_array()
+        elif self.match(JTokenType.LEFT_BRACE):
+            value = self.parse_object()
 
         return value
 
@@ -79,7 +81,6 @@ class JParser:
 
         self.consume(JTokenType.RIGHT_SQUARE_BRACKET, error_message="'[' opened but was never closed.")
         return result_array
-
 
     def consume(self, *token_types, error_message: str = ""):
         if self.match(*token_types): return self.advance()
