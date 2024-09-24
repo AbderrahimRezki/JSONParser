@@ -35,7 +35,7 @@ class JParser:
         key = self.consume(JTokenType.STRING, error_message="Expected JSON Key to be a string.")
         self.consume(JTokenType.COLON, error_message="Expected ':' after JSON Key.")
         value = self.consume(
-            JTokenType.STRING, JTokenType.NUMBER,
+            JTokenType.STRING, JTokenType.NUMBER, JTokenType.BOOL,
             error_message="Expected JSON value after ':'.")
 
         self.result[key.literal] = value.literal

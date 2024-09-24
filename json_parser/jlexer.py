@@ -12,6 +12,12 @@ class JLexer:
         self.current = 0
         self.line = 1
 
+        self.keywords = {
+            "true": True,
+            "false": False,
+            "null": None
+        }
+
     def __call__(self):
         return self.get_tokens()
 
@@ -35,7 +41,11 @@ class JLexer:
             case  "\"": self.string()
             case  x if x.isnumeric(): self.number()
             case  "\n": self.line += 1
-            case     _: raise InvalidTokenException(f"Non recognized character <{c}> at line {self.line}.")
+            case     _:
+                try:
+                    self.boolean()
+                except Exception as e:
+                    raise InvalidTokenException(f"Non recognized character <{c}> at line {self.line}.")
 
     def string(self):
         while not self.peek() == "\"" and not self.is_at_end():
@@ -61,6 +71,18 @@ class JLexer:
 
         literal = float(self.json_string[self.start:self.current])
         self.add_token_(JTokenType.NUMBER, literal)
+
+    def boolean(self):
+        while self.peek().isalpha() and not self.is_at_end():
+            self.advance()
+
+        lexeme = self.json_string[self.start:self.current]
+
+        if lexeme in self.keywords:
+            literal = self.keywords[lexeme]
+            self.add_token_(JTokenType.BOOL, literal)
+        else:
+            raise Exception()
 
     def peek(self):
         return self.json_string[self.current]

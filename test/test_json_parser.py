@@ -54,6 +54,22 @@ class TestJsonParser(unittest.TestCase):
         lexer = JLexer(json_string)
         self.assertRaises(InvalidTokenException, lexer.get_tokens)
 
+    def test_parse_single_key_bool_value_returns_dict(self):
+        json_string = '{"key" : true}'
+        result_dict = {"key": True}
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
+        json_string = '{"key" : false}'
+        result_dict = {"key": False}
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
+        json_string = '{"key" : null}'
+        result_dict = {"key": None}
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
     def _test_parse_json_returns_dict_and_exit_code(self, json_string, result_dict, exit_code=ExitCode.SUCCESS, debug=True):
         lexer = JLexer(json_string)
         tokens = lexer.get_tokens()
