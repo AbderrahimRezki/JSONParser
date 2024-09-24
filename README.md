@@ -1,0 +1,1 @@
+This project is a simple JSON parser built using Test-Driven Development (TDD). The parser is designed to read, validate, and extract data from JSON strings, ensuring correctness through a comprehensive suite of unit tests.
