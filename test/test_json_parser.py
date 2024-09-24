@@ -76,6 +76,18 @@ class TestJsonParser(unittest.TestCase):
 
         self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
 
+    def test_parse_json_empty_array_value_returns_dict(self):
+        json_string = '{"key": []}'
+        result_dict = {"key": []}
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
+    def test_parse_json_array_value_returns_dict(self):
+        json_string = '{"key": ["value", 1, null, false]}'
+        result_dict = {"key": ["value", 1, None, False]}
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
     def _test_parse_json_returns_dict_and_exit_code(self, json_string, result_dict, exit_code=ExitCode.SUCCESS, debug=True):
         lexer = JLexer(json_string)
         tokens = lexer.get_tokens()

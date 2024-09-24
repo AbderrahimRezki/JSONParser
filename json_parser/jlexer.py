@@ -37,11 +37,13 @@ class JLexer:
 
             case   "{": self.add_token(JTokenType.LEFT_BRACE)
             case   "}": self.add_token(JTokenType.RIGHT_BRACE)
+            case   "[": self.add_token(JTokenType.LEFT_SQUARE_BRACKET)
+            case   "]": self.add_token(JTokenType.RIGHT_SQUARE_BRACKET)
             case   ":": self.add_token(JTokenType.COLON)
             case   ",": self.add_token(JTokenType.COMMA)
             case  "\"": self.string()
-            case  x if x.isnumeric(): self.number()
             case  "\n": self.line += 1
+            case  x if x.isnumeric(): self.number()
             case     _:
                 try:
                     self.boolean()
