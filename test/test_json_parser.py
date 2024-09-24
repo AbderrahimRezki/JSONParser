@@ -2,7 +2,7 @@ from contextlib import redirect_stdout
 import unittest
 from io import StringIO
 from json_parser import JParser
-from json_parser.extra.exceptions import InvalidJsonException
+from json_parser.extra.exceptions import InvalidJsonException, InvalidTokenException
 from json_parser.extra.utils import ExitMessage, ExitCode
 from json_parser.jlexer import JLexer
 
@@ -19,9 +19,8 @@ class TestJsonParser(unittest.TestCase):
         parser = JParser(tokens)
 
         with self.assertRaises(SystemExit) as cm:
-            parser.parse()
+            self.assertRaises(InvalidJsonException, parser.parse)
             result = parser.result
-            self.assertRaises(InvalidJsonException)
 
         self.assertEqual(cm.exception.code, ExitCode.INVALID)
 
@@ -44,6 +43,16 @@ class TestJsonParser(unittest.TestCase):
 
         self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
 
+    def test_parse_single_key_float_value_returns_dict(self):
+        json_string = '{"key" : 37.56}'
+        result_dict = {"key": 37.56}
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
+    def test_parse_single_key_float_value_raises_exception(self):
+        json_string = '{"key" : 37.5.6}'
+        lexer = JLexer(json_string)
+        self.assertRaises(InvalidTokenException, lexer.get_tokens)
 
     def _test_parse_json_returns_dict_and_exit_code(self, json_string, result_dict, exit_code=ExitCode.SUCCESS, debug=True):
         lexer = JLexer(json_string)

@@ -35,7 +35,7 @@ class JLexer:
             case  "\"": self.string()
             case  x if x.isnumeric(): self.number()
             case  "\n": self.line += 1
-            case     _: raise InvalidTokenException(f"Character <{c}> is not recognized.")
+            case     _: raise InvalidTokenException(f"Non recognized character <{c}> at line {self.line}.")
 
     def string(self):
         while not self.peek() == "\"" and not self.is_at_end():
@@ -50,7 +50,13 @@ class JLexer:
         self.advance()
 
     def number(self):
-        while self.peek().isnumeric() and not self.is_at_end():
+        point_count = 0
+        while (self.peek().isnumeric() or self.peek() == ".") and not self.is_at_end():
+            if self.peek() == ".": point_count += 1
+
+            if point_count > 1:
+                raise InvalidTokenException(f"Invalid float number at line {self.line}.")
+
             self.advance()
 
         literal = float(self.json_string[self.start:self.current])
