@@ -1,11 +1,17 @@
-class InvalidJsonException(Exception):
+from json_parser.extra.utils import ExitCode
+
+class JParserExceptionWithExitCode(Exception):
+    def get_exit_code(self):
+        return ExitCode.INVALID
+
+class InvalidJsonException(JParserExceptionWithExitCode):
     pass
 
-class InvalidTokenException(Exception):
+class InvalidTokenException(JParserExceptionWithExitCode):
     pass
 
-class LexerError(Exception):
+class LexerError(JParserExceptionWithExitCode):
     pass
 
-class ParserError(Exception):
+class ParserError(JParserExceptionWithExitCode):
     pass

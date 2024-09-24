@@ -7,3 +7,4 @@ class ExitMessage(str, Enum):
 class ExitCode(int, Enum):
     SUCCESS = 0
     INVALID = 1
+    FAILURE = 2

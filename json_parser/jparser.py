@@ -1,4 +1,6 @@
-from json_parser.extra.exceptions import ParserError
+import sys
+from json_parser.extra.exceptions import JParserExceptionWithExitCode, ParserError
+from json_parser.extra.utils import ExitCode
 from json_parser.jtoken import JToken, JTokenType
 from typing import List
 
@@ -9,19 +11,32 @@ class JParser:
         self.tokens = tokens
         self.current = 0
 
-    def __call__(self, tokens):
-        return self.parse(tokens)
+    def __call__(self):
+        return self.parse()
 
-    def parse(self, tokens):
-        self.entry()
-        self.consume(JTokenType.EOF, "Expected EOF Token at the end of the file.")
+    def parse(self):
+        try:
+            self.entry()
+            self.consume(JTokenType.EOF, "Expected EOF Token at the end of the file.")
+        except JParserExceptionWithExitCode as e:
+            sys.exit(e.get_exit_code())
+        except Exception as e:
+            sys.exit(ExitCode.FAILURE)
+        else:
+            sys.exit(ExitCode.SUCCESS)
 
     def entry(self):
         self.consume(JTokenType.LEFT_BRACE, "Expected JSON String to start with '{'.")
-        self.parse_kv_pairs()
+        while not self.match(JTokenType.RIGHT_BRACE):
+            self.parse_kv_pairs()
         self.consume(JTokenType.RIGHT_BRACE, "Expected JSON String to end with '}'")
 
-    def parse_kv_pairs(self): pass
+    def parse_kv_pairs(self):
+        key = self.consume(JTokenType.STRING, "Expected JSON Key to be a string.")
+        self.consume(JTokenType.COLON, "Expected ':' after JSON Key.")
+        value = self.consume(JTokenType.STRING, "Expected JSON value after ':'.")
+
+        self.result[key.literal] = value.literal
 
     def consume(self, token_type: JTokenType, error_message: str):
         if self.match(token_type): return self.advance()
@@ -30,10 +45,13 @@ class JParser:
     def match(self, *token_types):
         token_type: JTokenType
         for token_type in token_types:
-            if self.peek().type == token_type:
+            if self.check(token_type):
                 return True
 
         return False
+
+    def check(self, token_type: JTokenType):
+        return self.peek().type == token_type
 
     def peek(self):
         return self.tokens[self.current]

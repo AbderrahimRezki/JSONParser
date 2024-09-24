@@ -27,11 +27,14 @@ class JLexer:
         c = self.advance()
 
         match(c):
-            case      "{": self.add_token(JTokenType.LEFT_BRACE)
-            case      "}": self.add_token(JTokenType.RIGHT_BRACE)
-            case     "\"": self.string()
-            case     "\n": self.line += 1
-            case        _: raise InvalidTokenException(f"Character <{c}> is not recognized.")
+            case x if x in [" ", "\t", "\r"]: pass
+
+            case   "{": self.add_token(JTokenType.LEFT_BRACE)
+            case   "}": self.add_token(JTokenType.RIGHT_BRACE)
+            case  "\"": self.string()
+            case   ":": self.add_token(JTokenType.COLON)
+            case  "\n": self.line += 1
+            case     _: raise InvalidTokenException(f"Character <{c}> is not recognized.")
 
     def string(self):
         while not self.peek() == "\"" and not self.is_at_end():
