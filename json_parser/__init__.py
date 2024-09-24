@@ -1,4 +1,12 @@
 from .jparser import JParser
-from .extra.exceptions import *
-from .extra.utils import *
-from . import jparser, jtoken, jlexer
+from .jlexer import JLexer
+
+
+def parse_json(json_string):
+    tokens = JLexer(json_string)()
+    parser = JParser(tokens)
+    parser.parse()
+    
+    return parser.result
+
+

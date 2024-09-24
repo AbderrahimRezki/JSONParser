@@ -17,37 +17,33 @@ class TestJsonParser(unittest.TestCase):
         tokens = lexer.get_tokens()
 
         parser = JParser(tokens)
+        self.assertRaises(InvalidJsonException, parser.parse)
 
-        with self.assertRaises(SystemExit) as cm:
-            self.assertRaises(InvalidJsonException, parser.parse)
-            result = parser.result
-
-        self.assertEqual(cm.exception.code, ExitCode.INVALID)
 
     def test_parse_empty_json_returns_empty_dict(self):
         empty_json = "{}"
         empty_dict = {}
 
-        self._test_parse_json_returns_dict_and_exit_code(empty_json, empty_dict)
+        self._test_parse_json_returns_dict(empty_json, empty_dict)
 
 
     def test_parse_single_key_string_value_returns_dict(self):
         json_string = '{"key" : "value"}'
         result_dict = {"key": "value"}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
     def test_parse_single_key_int_value_returns_dict(self):
         json_string = '{"key" : 37}'
         result_dict = {"key": 37}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
     def test_parse_single_key_float_value_returns_dict(self):
         json_string = '{"key" : 37.56}'
         result_dict = {"key": 37.56}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
     def test_parse_single_key_float_value_raises_exception(self):
         json_string = '{"key" : 37.5.6}'
@@ -58,47 +54,47 @@ class TestJsonParser(unittest.TestCase):
         json_string = '{"key" : true}'
         result_dict = {"key": True}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
         json_string = '{"key" : false}'
         result_dict = {"key": False}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
         json_string = '{"key" : null}'
         result_dict = {"key": None}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
     def test_parse_json_multi_types_returns_dict(self):
         json_string = '{\n\t"key": "value", \n\t"key2": 19, \n\t"key3": null, \n\t"key4": true, \n\t"key5": false}'
         result_dict = {"key": "value", "key2": 19, "key3": None, "key4": True, "key5": False}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
     def test_parse_json_empty_array_value_returns_dict(self):
         json_string = '{"key": []}'
         result_dict = {"key": []}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
     def test_parse_json_array_value_returns_dict(self):
         json_string = '{"key": ["value", 1, null, false]}'
         result_dict = {"key": ["value", 1, None, False]}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
     def test_parse_json_empty_object_value_returns_dict(self):
         json_string = '{"key": {}}'
         result_dict = {"key":{}}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
     def test_parse_json_object_value_returns_dict(self):
         json_string = '{"key": {"key1":"value"}}'
         result_dict = {"key":{"key1":"value"}}
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
     def test_parse_json_object_with_nested_structures_returns_dict(self):
         json_string = '''{
@@ -129,9 +125,9 @@ class TestJsonParser(unittest.TestCase):
             ]
         }
 
-        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+        self._test_parse_json_returns_dict(json_string, result_dict)
 
-    def _test_parse_json_returns_dict_and_exit_code(self, json_string, result_dict, exit_code=ExitCode.SUCCESS, debug=True):
+    def _test_parse_json_returns_dict(self, json_string, result_dict, debug=True):
         lexer = JLexer(json_string)
         tokens = lexer.get_tokens()
 
@@ -140,13 +136,11 @@ class TestJsonParser(unittest.TestCase):
 
         parser = JParser(tokens)
 
-        with self.assertRaises(SystemExit) as cm:
-            parser.parse()
-            result = parser.result
+        parser.parse()
+        result = parser.result
 
-            self.assertDictEqual(result, result_dict)
+        self.assertDictEqual(result, result_dict)
 
-        self.assertEqual(cm.exception.code, exit_code)
 
 if __name__ == "__main__":
     unittest.main()

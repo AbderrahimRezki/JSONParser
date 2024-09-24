@@ -1,6 +1,6 @@
 import sys
 from unittest import result
-from json_parser.extra.exceptions import JParserExceptionWithExitCode, ParserError
+from json_parser.extra.exceptions import InvalidJsonException
 from json_parser.extra.utils import ExitCode
 from json_parser.jtoken import JToken, JTokenType
 from typing import List, Tuple, Any
@@ -16,23 +16,17 @@ class JParser:
         return self.parse()
 
     def parse(self):
-        try:
-            obj = self.parse_object()
-            self.consume(JTokenType.EOF, error_message="Expected EOF Token at the end of the file.")
-            self.result = obj
-        except JParserExceptionWithExitCode as e:
-            sys.exit(e.get_exit_code())
-        except Exception as e:
-            sys.exit(ExitCode.FAILURE)
-        else:
-            sys.exit(ExitCode.SUCCESS)
+        obj = self.parse_object()
+        self.consume(JTokenType.EOF, error_message="Expected EOF Token at the end of the file.")
+        self.result = obj
+        
 
     def parse_object(self):
         self.consume(JTokenType.LEFT_BRACE, error_message="Expected JSON String to start with '{'.")
         kv_pairs: List[Tuple[Any, Any]] = self.parse_kv_pairs()
         self.consume(JTokenType.RIGHT_BRACE, error_message="Expected JSON String to end with '}'")
 
-        result = dict(kv_pairs)
+        return dict(kv_pairs)
 
     def parse_kv_pairs(self) -> List[Tuple[Any, Any]]:
         kv_pairs = []
@@ -84,7 +78,7 @@ class JParser:
 
     def consume(self, *token_types, error_message: str = ""):
         if self.match(*token_types): return self.advance()
-        raise ParserError(error_message)
+        raise InvalidJsonException(error_message)
 
     def match(self, *token_types):
         token_type: JTokenType
