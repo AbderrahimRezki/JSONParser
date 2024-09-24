@@ -8,6 +8,7 @@ class JTokenType(Enum):
     NUMBER      = auto()
     BOOL        = auto()
     COLON       = auto()
+    COMMA       = auto()
     EOF         = auto()
 
 

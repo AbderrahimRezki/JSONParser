@@ -70,6 +70,12 @@ class TestJsonParser(unittest.TestCase):
 
         self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
 
+    def test_parse_json_multi_types_returns_dict(self):
+        json_string = '{\n\t"key": "value", \n\t"key2": 19, \n\t"key3": null, \n\t"key4": true, \n\t"key5": false}'
+        result_dict = {"key": "value", "key2": 19, "key3": None, "key4": True, "key5": False}
+
+        self._test_parse_json_returns_dict_and_exit_code(json_string, result_dict)
+
     def _test_parse_json_returns_dict_and_exit_code(self, json_string, result_dict, exit_code=ExitCode.SUCCESS, debug=True):
         lexer = JLexer(json_string)
         tokens = lexer.get_tokens()
@@ -82,6 +88,7 @@ class TestJsonParser(unittest.TestCase):
         with self.assertRaises(SystemExit) as cm:
             parser.parse()
             result = parser.result
+
             self.assertDictEqual(result, result_dict)
 
         self.assertEqual(cm.exception.code, exit_code)
