@@ -19,3 +19,21 @@ Run tests:
 ```bash
 python -m unittest discover tests/
 ```
+## Usage
+```py
+from json_parser import parse_json
+
+json_string = '''{
+  "key-s": "string value",
+  "key-n": 37.7,
+  "key-a": [1, 2, 3, "string", true, null],
+  "key-o": {
+    "key-o-bool": false
+  }
+}'''
+
+print(parse_json(json_string))
+
+# Output
+{'key-s': 'string value', 'key-n': 37.7, 'key-a': [1.0, 2.0, 3.0, 'string', True, None], 'key-o': {'key-o-bool': False}}
+```
