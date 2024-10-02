@@ -50,6 +50,11 @@ class TestJsonParser(unittest.TestCase):
         lexer = JLexer(json_string)
         self.assertRaises(InvalidTokenException, lexer.get_tokens)
 
+    def test_parse_single_key_ends_with_point_value_raises_exception(self):
+        json_string = '{"key" : 37.}'
+        lexer = JLexer(json_string)
+        self.assertRaises(InvalidTokenException, lexer.get_tokens)
+
     def test_parse_single_key_bool_value_returns_dict(self):
         json_string = '{"key" : true}'
         result_dict = {"key": True}
